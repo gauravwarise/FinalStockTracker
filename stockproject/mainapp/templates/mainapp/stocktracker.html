@@ -1,0 +1,64 @@
+{% extends 'mainapp/basic.html' %}
+{% load static %}
+
+{% block title %}
+StockTracker
+{% endblock %}
+
+{% block css %}
+<style>
+    table {
+        font-family: Arial, sans-serif;
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+    th, td {
+        border: 1px solid #dddddd;
+        text-align: left;
+        padding: 8px;
+    }
+
+    th {
+        background-color: #f2f2f2;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="container">
+    <h1>Live Stock Tracker</h1>
+    <h1>Stock Tracker</h1>
+    <p>===============================================</p>
+    <pre>Data: {{ data|pprint }}</pre>
+<pre>Keys in data: {{ data.keys }}</pre>
+    <p>==========================================</p>
+    <table>
+        <thead>
+            <tr>
+                <th>Stock</th>
+                {% for value in headers %}
+                    <th>{{ value }}</th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for stock, stock_data in data.items %}
+                <tr>
+                    <td>{{ stock }}</td>
+                    {% for subkey, subvalue in stock_data.1.items %}
+                        <td>{{ subvalue }}</td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
+
+{% block jss %}
+<script>
+
+</script>
+{% endblock %}
+
