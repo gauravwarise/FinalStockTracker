@@ -2,6 +2,7 @@
 {% load static %}
 
 {% block title %}
+
 StockTracker
 {% endblock %}
 
@@ -13,7 +14,8 @@ StockTracker
         width: 100%;
     }
 
-    th, td {
+    th,
+    td {
         border: 1px solid #dddddd;
         text-align: left;
         padding: 8px;
@@ -26,33 +28,69 @@ StockTracker
 {% endblock %}
 
 {% block body %}
-<div class="container">
-    <h1>Live Stock Tracker</h1>
-    <h1>Stock Tracker</h1>
-    <p>===============================================</p>
-    <pre>Data: {{ data|pprint }}</pre>
-<pre>Keys in data: {{ data.keys }}</pre>
-    <p>==========================================</p>
-    <table>
-        <thead>
-            <tr>
-                <th>Stock</th>
-                {% for value in headers %}
-                    <th>{{ value }}</th>
-                {% endfor %}
-            </tr>
-        </thead>
-        <tbody>
-            {% for stock, stock_data in data.items %}
-                <tr>
-                    <td>{{ stock }}</td>
-                    {% for subkey, subvalue in stock_data.1.items %}
-                        <td>{{ subvalue }}</td>
-                    {% endfor %}
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+<div class="container-fluid mt-5">
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table caption-top">
+                    <caption>STOCK INFO</caption>
+                    <thead>
+                        <tr>
+                            <th scope="col" class="text-center" style="white-space: nowrap">Sr No.</th>
+                            <th scope="col" class="text-center" style="white-space: nowrap">Stock</th>
+                            <th scope="col" class="text-center" style="white-space: nowrap">Price</th>
+                            <th scope="col" class="text-center" style="white-space: nowrap">Previous Close</th>
+                            <th scope="col" class="text-center" style="white-space: nowrap">Open</th>
+                            <th scope="col" class="text-center" style="white-space: nowrap">Change</th>
+                            <th scope="col" class="text-center" style="white-space: nowrap">Market Cap</th>
+                            <th scope="col" class="text-center" style="white-space: nowrap">Volume</th>
+
+                        </tr>
+                        
+                        <!-- <tr>
+                            <th scope="col" class="text-center" style="white-space: nowrap">Stock</th>
+                            {% for header in headers %}
+                            <th scope="col" class="text-center" style="white-space: nowrap">{{ header }}</th>
+                            {% endfor %}
+                        </tr> -->
+                    </thead>
+                    <tbody>
+                        {% for key, value in data.items %}
+                        {% for value_dict in value %}
+                        <tr scope="row">
+                            <td class="text-center" style="white-space: nowrap">{{ forloop.counter }}</td>
+                            <td class="text-center" style="white-space: nowrap">{{ key }}</td>
+                            <td class="text-center" style="white-space: nowrap">{{ value_dict.Open }}</td>
+                            <td class="text-center" style="white-space: nowrap">{{ value_dict.PreviousClose }}</td>
+                            <td class="text-center" style="white-space: nowrap">{{ value_dict.Open }}</td>
+                            <td class="text-center" style="white-space: nowrap">null</td>
+                            <td class="text-center" style="white-space: nowrap">{{ value_dict.MarketCap }}</td>
+                            <td class="text-center" style="white-space: nowrap">{{ value_dict.Volume }}</td>
+
+
+                            
+                            <!-- Add more columns as needed -->
+                        </tr>
+                        {% endfor %}
+                        {% endfor %}
+                        <!-- {% for key, value in data.items %}
+                        <tr scope="row">
+                            <td class="text-center" style="white-space: nowrap">{{ key }}</td>
+                            {% for item in value %}
+                            {% for sub_key, sub_value in item.items %}
+                            <td class="text-center" style="white-space: nowrap">{{ sub_value }}</td>
+                            {% endfor %}
+                            {% endfor %}
+                        </tr>
+                        {% endfor %} -->
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+
 </div>
 {% endblock %}
 
@@ -61,4 +99,3 @@ StockTracker
 
 </script>
 {% endblock %}
-
