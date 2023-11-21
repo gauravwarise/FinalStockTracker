@@ -51,7 +51,6 @@ StockTracker
                             <th scope="col" class="text-center" style="white-space: nowrap">Change</th>
                             <th scope="col" class="text-center" style="white-space: nowrap">Market Cap</th>
                             <th scope="col" class="text-center" style="white-space: nowrap">Volume</th>
-
                         </tr>
 
                         <!-- <tr>
@@ -118,9 +117,37 @@ StockTracker
             </div>
         </div>
     </div>
-
-
 </div>
+{{ room_name|json_script:"room_name" }}
+<script>
+    const roomName = JSON.parse(document.getElementById('room_name').textContent);
+  var queryString = window.location.search;
+  queryString = queryString.substring(1);
+  console.log(queryString);
+  const stockSocket = new WebSocket(
+    'ws://' +
+    window.location.host +
+    '/ws/stock/' +
+    roomName +
+    '/' +
+    '?' +
+    queryString
+  );
+
+  stockSocket.onmessage = function(e){
+    
+    var cleanedMessage = e.data.replace(/: NaN/g, ": null");
+    try {
+        const data = JSON.parse(cleanedMessage);
+        console.log(data);
+    } catch (error) {
+        console.error("Error parsing JSON:", error);
+    }
+  };
+
+console.log(stockSocket)
+
+</script>
 {% endblock %}
 
 {% block jss %}

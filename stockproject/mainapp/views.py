@@ -83,7 +83,8 @@ def stockTracker(request):
 
     context = {
         'data':restructured_data,
-        'headers':headers
+        'headers':headers,
+        'room_name':'track'
     }
     print(context)
 
