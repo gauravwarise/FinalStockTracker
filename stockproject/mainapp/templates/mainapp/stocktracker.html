@@ -34,13 +34,14 @@ StockTracker
     }
 </style>
 {% endblock %}
+<!-- ... (previous template code) ... -->
 
 {% block body %}
 <div class="container-fluid mt-5">
     <div class="card">
         <div class="card-body">
             <div class="table-responsive">
-                <table class="table caption-top">
+                <table id="stockTable" class="table caption-top">
                     <caption>STOCK INFO</caption>
                     <thead>
                         <tr>
@@ -68,8 +69,10 @@ StockTracker
 
                             {% for value_dict in value %}
                             <td class="text-center" style="white-space: nowrap">{{ key }}</td>
-                            <td id="{{key}}_price" class="text-center" style="white-space: nowrap">{{ value_dict.Open }}</td>
-                            <td id="{{key}}_prevprice" class="text-center" style="white-space: nowrap">{{value_dict.PreviousClose }}</td>
+                            <td id="{{key}}_price" class="text-center" style="white-space: nowrap">{{ value_dict.Open }}
+                            </td>
+                            <td id="{{key}}_prevprice" class="text-center" style="white-space: nowrap">
+                                {{value_dict.PreviousClose }}</td>
                             <td id="{{key}}_change" class="text-center" style="white-space: nowrap">
                                 <script>
                                     var priceElement = document.getElementById("{{key}}_price");
@@ -94,8 +97,9 @@ StockTracker
 
                                 </script>
                             </td>
-                            <td class="text-center" style="white-space: nowrap">{{ value_dict.MarketCap }}</td>
-                            <td class="text-center" style="white-space: nowrap">{{ value_dict.Volume }}</td>
+                            <td id="{{key}}_cap" class="text-center" style="white-space: nowrap">{{ value_dict.MarketCap}}</td>
+                            <td id="{{key}}_vol" class="text-center" style="white-space: nowrap">{{ value_dict.Volume }}
+                            </td>
 
                             <!-- Add more columns as needed -->
                         </tr>
@@ -121,32 +125,56 @@ StockTracker
 {{ room_name|json_script:"room_name" }}
 <script>
     const roomName = JSON.parse(document.getElementById('room_name').textContent);
-  var queryString = window.location.search;
-  queryString = queryString.substring(1);
-  console.log(queryString);
-  const stockSocket = new WebSocket(
-    'ws://' +
-    window.location.host +
-    '/ws/stock/' +
-    roomName +
-    '/' +
-    '?' +
-    queryString
-  );
+    var queryString = window.location.search;
+    queryString = queryString.substring(1);
+    console.log(queryString);
 
-  stockSocket.onmessage = function(e){
-    
-    var cleanedMessage = e.data.replace(/: NaN/g, ": null");
-    try {
-        const data = JSON.parse(cleanedMessage);
-        console.log(data);
-    } catch (error) {
-        console.error("Error parsing JSON:", error);
-    }
-  };
+    const stockTable = document.getElementById('stockTable');
 
-console.log(stockSocket)
+    const stockSocket = new WebSocket(
+        'ws://' +
+        window.location.host +
+        '/ws/stock/' +
+        roomName +
+        '/' +
+        '?' +
+        queryString
+    );
 
+    stockSocket.onmessage = function (e) {
+        var cleanedMessage = e.data.replace(/: NaN/g, ": null");
+        try {
+            const data = JSON.parse(cleanedMessage);
+            console.log(data);
+
+            // Populate the table with the received data
+            Object.entries(data).forEach(([key, stockData], index) => {
+
+                var priceElement = document.getElementById(key + '_price');
+                var prevPriceElement = document.getElementById(key + '_prevprice');
+                var changeElement = document.getElementById(key + '_change');
+
+                var prevprice = stockData[0].PreviousClose;
+                var price = stockData[0].Open;
+                var marketcap = stockData[0].MarketCap;
+                var volume = stockData[0].Volume;
+
+
+                prevPriceElement.innerHTML = prevprice;
+                priceElement.innerHTML = price;
+                document.getElementById(key+'_cap').innerHTML = marketcap;
+                document.getElementById(key+'_vol').innerHTML = volume;
+                var changedPrice = parseFloat(price-prevprice)
+                changeElement.innerHTML = changedPrice.toFixed(2)
+
+                
+            });
+        } catch (error) {
+            console.error("Error parsing JSON:", error);
+        }
+    };
+
+    console.log(stockSocket)
 </script>
 {% endblock %}
 
